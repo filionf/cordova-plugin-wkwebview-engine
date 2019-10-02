@@ -69,6 +69,27 @@
 {
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
     configuration.processPool = [[CDVWKProcessPoolFactory sharedFactory] sharedProcessPool];
+
+    // Modified by Francis Filion
+    // Taken from https://github.com/ionic-team/cordova-plugin-ionic-webview/blob/7a514b071ba2c094e02f56f46f2e90a2a3a1e9be/src/ios/CDVWKWebViewEngine.m
+    NSString* _BGStatus;
+    if (@available(iOS 12.2, *)) {
+      // do stuff for iOS 12.2 and newer
+      NSLog(@"iOS 12.2+ detected");
+      NSString* str = @"YWx3YXlzUnVuc0F0Rm9yZWdyb3VuZFByaW9yaXR5";
+      NSData* data  = [[NSData alloc] initWithBase64EncodedString:str options:0];
+      _BGStatus = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    } else {
+      // do stuff for iOS 12.1 and older
+      NSLog(@"iOS Below 12.2 detected");
+      NSString* str = @"X2Fsd2F5c1J1bnNBdEZvcmVncm91bmRQcmlvcml0eQ==";
+      NSData* data  = [[NSData alloc] initWithBase64EncodedString:str options:0];
+      _BGStatus = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    }
+    [configuration setValue:[NSNumber numberWithBool:YES] forKey:_BGStatus];
+    // End modification
+
+
     if (settings == nil) {
         return configuration;
     }
